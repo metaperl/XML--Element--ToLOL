@@ -159,10 +159,10 @@ sub DIVE {
 }
 
 sub maybe_morph {
-  my($self,$data)=@_;
+  my($self)=@_;
   if ($self->can('morph')) {
     warn "MORPHING";
-    $self->morph($data);
+    $self->morph;
   }
 }
 
