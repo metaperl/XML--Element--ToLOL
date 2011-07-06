@@ -1,10 +1,15 @@
 package My::XML::Render;
 use Moose;
 
+use HTML::Element::Library;
+
 use Data::Diver qw( Dive DiveRef DiveError );
 use XML::Element;
 
-has 'data' => ( is => 'rw', isa => 'HashRef' );
+has 'data' => (
+    is      => 'rw',
+    trigger => \&maybe_morph
+);
 
 sub DIVE {
     my $ref = Dive(@_);
@@ -26,12 +31,20 @@ sub DIVE {
 
 }
 
+sub maybe_morph {
+    my ($self) = @_;
+    if ( $self->can('morph') ) {
+        warn "MORPHING";
+        $self->morph;
+    }
+}
+
 sub lol {
     my ($self) = @_;
 
     my $root = $self->data;
 
-    [
+    my $lol = [
         note => { 'onError' => 'stopOnError' } => DIVE( $root, qw() ),
         [ to      => DIVE( $root, qw(to) ) ],
         [ from    => DIVE( $root, qw(from) ) ],
@@ -49,7 +62,11 @@ sub lol {
             ],
             [ super => DIVE( $root, qw(body super) ) ]
         ]
-    ]
+    ];
+
+    # doesnt work but it should:
+    # my $class=ref $self;
+    # bless $lol, $class;
 
 }
 

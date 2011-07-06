@@ -5,6 +5,8 @@ use warnings;
 
 use autodie;
 
+use HTML::Element::Library;
+
 package XML::Element;
 
 sub cleantag {
@@ -86,19 +88,20 @@ sub mkpkg {
 
     my $pkgstr = __PACKAGE__->_mkpkg( $pkg => $lol, $fileheader  );
 
-    warn "PKG: $pkg";
+    warn "PKG:$pkg";
 
     my @part = split '::', $pkg;
     my $file = $part[$#part];
-    warn "PART: @part";
+    warn "PART:@part";
 
     use File::Spec;
-    my $path = File::Spec->catdir( $prepend_lib ? $prepend_lib : '', @part[0 .. $#part-1] );
-    warn $path;
+    my $path = File::Spec->catdir( $prepend_lib ? $prepend_lib : (), @part[0 .. $#part-1] );
+    warn "PATH:$path";
     use File::Path;
     File::Path::make_path($path, {verbose => 1});
 
     $file =  File::Spec->catfile($path, "$file.pm");
+    warn "FILE:$file";
     open( my $fh, '>', $file ) or die "Could not open string for writing";
 
     $fh->print($pkgstr);
@@ -123,21 +126,27 @@ sub mklol {
 }
 
 sub _mkpkg {
-    my ( $self, $pkg, $lol, $fileheader ) = @_;
+    my ( $self, $pkg, $lol, $extends_string ) = @_;
 
     open( my $fh, '>', \my $pkgstr ) or die "Could not open pkg for writing";
-    $fh->printf(<<'EOPKG', $pkg, $fileheader, $lol);
+    
+    my $extends = $extends_string ? "extends qw($extends_string)" : '' ;
+    $extends =~ s/^\s+//g;
+    $fh->printf(<<'EOPKG', $pkg, $extends, $lol);
 package %s;
 use Moose;
 
 %s;
+
+use HTML::Element::Library;
+
+
 
 use Data::Diver qw( Dive DiveRef DiveError );
 use XML::Element;
 
 has 'data' => (
   is => 'rw', 
-  isa => 'HashRef',
   trigger => \&maybe_morph
 );
 
@@ -169,10 +178,15 @@ sub maybe_morph {
 sub lol {
   my ($self)=@_;
 
+
+
 my $root = $self->data;
 
+my $lol = %s;
 
- %s
+# doesnt work but it should:
+# my $class=ref $self;
+# bless $lol, $class;
 
 }
 

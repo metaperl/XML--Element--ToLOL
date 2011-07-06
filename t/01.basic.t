@@ -68,7 +68,8 @@ my $pkg = XML::Element::Tolol->mkpkg('My::XML::Render' => $tree, $firstdepth, 't
 eval $pkg;
 
 if ($@) {
-  die "error on eval: $@";
+  use Carp;
+  Carp::confess "error on eval: $@";
 }
 
 
@@ -80,14 +81,15 @@ my %data = (
 $data{body}{kim}{one}{kar} = 'datsun';
 my $o = My::XML::Render->new(data => \%data);
 $tree = $o->tree;
-#warn "TREE " .$tree->as_XML;
+use Data::Dumper;
+#warn "TREE " . Dumper($tree);
 my $prune = $tree->prune;
 #warn "PRUNE $prune";
 
 my $x = $o->tree->prune->as_XML;
 warn "X:$x";
 chomp($x);
-my $exp = '<note onError="stopOnError"><to>Jane</to><from>Jon</from><heading>beheaded</heading><body><kim><one><kar>datsun</kar></one></kim></body></note>';
+$exp = '<note onError="stopOnError"><to>Jane</to><from>Jon</from><heading>beheaded</heading><body><kim><one><kar>datsun</kar></one></kim></body></note>';
 
 is ($x, $exp, 'xml generation');
 
