@@ -1,18 +1,7 @@
 package t::My::Shopping;
 use Moose;
 
-extends qw( HTML::Element);
-
 use HTML::Element::Library;
-
-bless [
-    note => { 'onError' => 'stopOnError' } => DIVE( $root, qw() ),
-    [
-        shopping => DIVE( $root, qw(shopping) ),
-        [ item => DIVE( $root, qw(shopping item) ) ]
-    ]
-  ],
-  __PACKAGE__;
 
 use Data::Diver qw( Dive DiveRef DiveError );
 use XML::Element;
@@ -54,6 +43,15 @@ sub lol {
     my ($self) = @_;
 
     my $root = $self->data;
+
+    my $lol = [
+        shopping => DIVE( $root, qw() ),
+        [ item => DIVE( $root, qw(item) ) ]
+    ];
+
+    # doesnt work but it should:
+    # my $class=ref $self;
+    # bless $lol, $class;
 
 }
 

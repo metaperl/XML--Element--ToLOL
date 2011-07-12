@@ -81,6 +81,7 @@ use warnings;
 
 use Carp::Always;
 
+# self, name of package for compiled xml, $tree of parsed xml
 sub mkpkg {
     my ( $self, $pkg, $tree, $firstdepth, $prepend_lib, $fileheader ) = @_;
 
@@ -124,6 +125,7 @@ sub mklol {
     $dest;
 
 }
+
 
 sub _mkpkg {
     my ( $self, $pkg, $lol, $extends_string ) = @_;
